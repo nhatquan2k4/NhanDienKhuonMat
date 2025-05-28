@@ -1,4 +1,4 @@
-# Báo Cáo Chi Tiết: Nhận Diện Khuôn Mặt Sử Dụng Hàm Mất Mát Triplet Với Mô Hình ResNet18 Tùy Chỉnh
+# Báo Cáo Chi Tiết: Nhận Diện Khuôn Mặt Sử Dụng Hàm Mất Mát Triplet Với Mô Hình ResNet18
 
 ## Giới Thiệu
 
@@ -16,7 +16,7 @@ Mục tiêu chính của dự án là xây dựng một hệ thống nhận di�
 
 Hệ thống được thiết kế để xử lý các thách thức như biến đổi ánh sáng, góc nhìn, biểu cảm khuôn mặt, và cấu trúc thư mục phức tạp, đồng thời tối ưu hóa hiệu suất trên tập dữ liệu thực tế.
 
-## Phương Pháp
+## I. Phương Pháp
 
 ### 1. Phát Hiện Khuôn Mặt
 Hệ thống sử dụng bộ phân loại Haar Cascade của OpenCV (`haarcascade_frontalface_default.xml`) để phát hiện khuôn mặt trong ảnh. Quy trình bao gồm:
@@ -27,7 +27,7 @@ Hệ thống sử dụng bộ phân loại Haar Cascade của OpenCV (`haarcasca
   - `minSize=(30, 30)`: Đặt kích thước tối thiểu của khuôn mặt để lọc bỏ các vùng quá nhỏ.
 - **Lưu kết quả**: Các khuôn mặt được cắt và lưu vào thư mục đầu ra `/kaggle/working/Faces_detected` với cấu trúc thư mục tương ứng với thư mục gốc.
 
-Hàm `detect_faces_in_nested_folders` được thiết kế để xử lý cấu trúc thư mục lồng nhau một cách mạnh mẽ, đảm bảo khả năng xử lý lỗi (ví dụ: ảnh không đọc được) và trả về một từ điển ghi lại số lượng khuôn mặt phát hiện trong mỗi ảnh.
+Hàm `detect_faces_in_nested_folders` được thiết kế để xử lý cấu trúc thư mục lồng nhau, đảm bảo khả năng xử lý lỗi (ví dụ: ảnh không đọc được) và trả về một từ điển ghi lại số lượng khuôn mặt phát hiện trong mỗi ảnh.
 
 ### 2. Chuẩn Bị Dữ Liệu
 Dữ liệu được tổ chức và chuẩn bị thông qua lớp `TripletFaceDataset`, được thiết kế để tạo ra các bộ ba (anchor, positive, negative) cho huấn luyện:
@@ -99,7 +99,7 @@ Mỗi `BasicBlock` trong ResNet18 sử dụng kết nối tắt để cộng đ�
 
 #### Lý do chọn ResNet18
 ResNet18 được chọn vì:
-- **Hiệu quả tính toán**: Với 18 tầng, ResNet18 có độ phức tạp thấp hơn so với các mô hình sâu hơn như ResNet50 hay ResNet101, phù hợp với tài nguyên tính toán trên Kaggle.
+- **Hiệu quả tính toán**: Với 18 tầng, ResNet18 có độ phức tạp thấp hơn so với các mô hình sâu hơn như ResNet50 hay ResNet101, phù hợp với tài nguyên tính toán.
 - **Hiệu suất đã được chứng minh**: ResNet18 đạt hiệu suất cao trên ImageNet, và trọng số được huấn luyện trước (`ResNet18_Weights.IMAGENET1K_V1`) cung cấp điểm khởi đầu tốt để chuyển giao học tập (transfer learning).
 - **Tính linh hoạt**: Kiến trúc có thể được tùy chỉnh dễ dàng để phù hợp với nhiệm vụ nhận diện khuôn mặt, chẳng hạn như thay đổi lớp kết nối đầy đủ để tạo embedding 128 chiều.
 - **Khả năng học đặc trưng**: Kết nối tắt giúp mô hình học được các đặc trưng phân cấp (hierarchical features), từ các đặc trưng cấp thấp (cạnh, góc) đến cấp cao (đặc điểm khuôn mặt).
@@ -108,9 +108,10 @@ Trong dự án, ResNet18 được tùy chỉnh bằng cách thay thế lớp k�
 
 ### 4. Hàm Mất Mát Triplet
 Hàm mất mát Triplet là trung tâm của quá trình huấn luyện, với mục tiêu tối ưu hóa không gian embedding:
-\[
+$$
 \mathcal{L} = \max(d(a, p) - d(a, n) + \text{margin}, 0)
-\]
+$$
+
 trong đó:
 - $d(a, p)$: Khoảng cách Euclidean giữa embedding của anchor và positive.
 - $d(a, n)$: Khoảng cách Euclidean giữa embedding của anchor và negative.
@@ -180,3 +181,96 @@ Hệ thống thể hiện hiệu quả vượt trội trong việc học các đ
 Dự án đã xây dựng thành công một hệ thống nhận diện khuôn mặt toàn diện, từ phát hiện khuôn mặt bằng Haar Cascade, tổ chức dữ liệu trong cấu trúc thư mục lồng nhau, đến huấn luyện mô hình học sâu sử dụng hàm mất mát Triplet. Việc sử dụng ResNet18 tùy chỉnh, với trọng số được huấn luyện trước từ ImageNet, đã mang lại hiệu quả vượt trội, đạt độ chính xác huấn luyện 94.74% và mất mát huấn luyện 0.2537 sau 100 epoch. Mặc dù độ chính xác kiểm tra dao động quanh 75-80%, hệ thống vẫn thể hiện tiềm năng lớn trong các ứng dụng thực tế như xác minh danh tính, kiểm soát truy cập, hoặc nhận diện tự động.
 
 Mô hình cuối cùng, được lưu tại `/kaggle/working/final_triplet_resnet18_ss2.pth`, sẵn sàng cho các tác vụ xác minh khuôn mặt và có thể được cải tiến thêm thông qua các kỹ thuật tối ưu hóa đề xuất. Với sự kết hợp giữa kỹ thuật truyền thống (Haar Cascade) và học sâu hiện đại (ResNet18, Triplet Loss), dự án không chỉ đạt được hiệu quả kỹ thuật mà còn mở ra các hướng phát triển cho các hệ thống nhận diện khuôn mặt tiên tiến hơn trong tương lai.
+
+## II. Nhận diện
+1. **Xây dựng thư viện nhúng và nhận diện khuôn mặt**: Sử dụng mạng Triplet dựa trên ResNet18 để tạo nhúng (embeddings) cho các ảnh trong thư viện và thực hiện nhận diện khuôn mặt từ ảnh đầu vào hoặc frame camera.
+2. **Giao diện người dùng (GUI)**: Sử dụng Tkinter để tạo giao diện cho phép người dùng tải ảnh hoặc sử dụng camera để nhận diện khuôn mặt thời gian thực.
+
+Hệ thống được thiết kế để chạy trên môi trường có GPU (CUDA) và sử dụng các thư viện như PyTorch, OpenCV, face_recognition, PIL và Tkinter.
+
+## 1. Xây Dựng Thư Viện Nhúng và Nhận Diện Khuôn Mặt
+
+### Mục Đích
+Xây dựng một thư viện nhúng khuôn mặt từ một thư mục ảnh và cung cấp các hàm để nhận diện khuôn mặt từ ảnh hoặc frame camera, sử dụng mô hình Triplet đã được huấn luyện trước đó.
+
+### Phương Pháp
+- **Mô hình TripletNet**:
+  - Dựa trên ResNet18, với lớp cuối cùng được thay thế bằng một lớp tuyến tính để tạo nhúng 128 chiều.
+  - Chuẩn hóa L2 được áp dụng cho nhúng để đảm bảo tính nhất quán trong không gian nhúng.
+  - Hàm `forward` xử lý ba đầu vào (anchor, positive, negative) để sử dụng trong huấn luyện triplet, nhưng chỉ sử dụng `forward_once` để tạo nhúng trong quá trình nhận diện.
+- **Xây dựng thư viện nhúng**:
+  - Hàm `build_individual_gallery_embeddings` duyệt qua thư mục ảnh (`./input_test`), tạo nhúng cho từng ảnh bằng mô hình TripletNet.
+  - Mỗi nhúng được lưu trong một từ điển với khóa là `person_name_img_name` và giá trị là cặp `(person_name, embedding)`.
+- **Nhận diện khuôn mặt**:
+  - **Phương pháp cơ bản (`identify_image`)**: Tính khoảng cách Euclidean giữa nhúng của ảnh đầu vào và tất cả nhúng trong thư viện, chọn người có khoảng cách nhỏ nhất nếu nhỏ hơn ngưỡng (threshold=0.4).
+  - **Phương pháp voting (`identify_image_voting`)**: Lấy top-k (mặc định k=5) ảnh có khoảng cách nhỏ nhất, thực hiện voting để chọn người xuất hiện nhiều nhất, chỉ tính các ảnh có khoảng cách dưới ngưỡng.
+  - **Nhận diện từ frame camera (`identify_frame`)**: Sử dụng `face_recognition` để phát hiện khuôn mặt, cắt vùng khuôn mặt, tạo nhúng và so sánh với thư viện nhúng để nhận diện.
+- **Đầu vào**:
+  - Mô hình đã huấn luyện (`final_triplet_resnet18_ss2.pth`).
+  - Thư mục ảnh (`./input_test`) chứa các thư mục con, mỗi thư mục con chứa ảnh của một người.
+- **Đầu ra**:
+  - Thư viện nhúng (`gallery_embeddings`).
+  - Kết quả nhận diện: tên người, khoảng cách nhỏ nhất, và tên ảnh khớp (nếu có).
+
+### Chi Tiết Triển Khai
+- **Biến đổi dữ liệu**:
+  - Sử dụng `transforms.Compose` để thay đổi kích thước ảnh thành 224x224, chuyển thành tensor, và chuẩn hóa với mean=[0.485, 0.456, 0.406] và std=[0.229, 0.224, 0.225].
+- **Xử lý lỗi**: Kiểm tra định dạng ảnh hợp lệ (JPG, JPEG, PNG) và xử lý ngoại lệ khi mở ảnh.
+- **Hiệu suất**: Sử dụng GPU (CUDA) để tăng tốc tính toán nhúng.
+
+## 2. Giao Diện Người Dùng (GUI)
+
+### Mục Đích
+Cung cấp một giao diện sử dụng Tkinter để người dùng tương tác với hệ thống nhận diện khuôn mặt, hỗ trợ cả tải ảnh và nhận diện thời gian thực qua camera.
+
+### Phương Pháp
+- **Giao diện chính**:
+  - Sử dụng Tkinter để tạo cửa sổ với kích thước 1200x700, nền màu sáng (`#e6ecf0`).
+  - Bao gồm:
+    - Tiêu đề "HỆ THỐNG NHẬN DIỆN KHUÔN MẶT".
+    - Frame chứa ba nút: "Chọn ảnh để nhận diện", "Bật Camera", "Dừng Camera".
+    - Frame hiển thị ảnh hoặc frame camera (kích thước 500x500).
+    - Nhãn hiển thị kết quả nhận diện (tên người, khoảng cách, độ chính xác).
+- **Chức năng tải ảnh (`upload_and_identify`)**:
+  - Cho phép người dùng chọn ảnh (JPG, JPEG, PNG) qua hộp thoại `filedialog`.
+  - Hiển thị ảnh thu nhỏ (300x300) trên giao diện.
+  - Sử dụng hàm `identify_image` để nhận diện, so sánh tên ảnh với tên người dự đoán để đánh giá tính đúng/sai.
+  - Hiển thị kết quả với màu chữ xanh (đúng) hoặc đỏ (sai).
+- **Chức năng camera thời gian thực (`start_camera`, `stop_camera`, `identify_frame`, `display_frame`)**:
+  - Mở camera (`cv2.VideoCapture(0)`) để nhận frame.
+  - Sử dụng `face_recognition` để phát hiện khuôn mặt, cắt vùng khuôn mặt, và nhận diện bằng cách so sánh nhúng với thư viện.
+  - Vẽ hình chữ nhật và nhãn (tên người, khoảng cách) lên frame.
+  - Cập nhật frame mỗi 50ms trên giao diện Tkinter.
+  - Nút "Dừng Camera" dừng camera và xóa frame hiển thị.
+
+### Chi Tiết Triển Khai
+- **Thiết kế giao diện**:
+  - Nút bấm sử dụng màu sắc hiện đại (xanh dương, xanh ngọc, đỏ nhạt) với hiệu ứng `activebackground`.
+  - Nhãn kết quả sử dụng font Helvetica, căn giữa, màu chữ tối (`#2c3e50`).
+- **Xử lý frame camera**:
+  - Frame OpenCV (BGR) được chuyển sang RGB, xử lý khuôn mặt, và hiển thị bằng `ImageTk.PhotoImage`.
+  - Kích thước frame được thay đổi thành 500x500 để phù hợp với giao diện.
+- **Ngưỡng nhận diện**: Mặc định 0.7 cho camera, 0.4 cho nhận diện ảnh tĩnh.
+- **Xử lý lỗi**: Kiểm tra lỗi mở camera, đọc frame, và xử lý trường hợp không phát hiện khuôn mặt.
+
+## Ghi Chú Triển Khai
+- **Môi trường**: Yêu cầu GPU (CUDA) để tính toán nhúng nhanh. Mô hình và thư viện ảnh được tải từ đường dẫn cụ thể (`./final_triplet_resnet18_ss2.pth`, `./input_test`).
+- **Phụ thuộc**: PyTorch, torchvision, OpenCV, face_recognition, PIL, Tkinter.
+- **Hiệu suất**: Nhận diện thời gian thực phụ thuộc vào tốc độ camera và khả năng xử lý của GPU.
+- **Khả năng mở rộng**: Hệ thống có thể mở rộng bằng cách thêm các phương pháp nhận diện khác (như voting) hoặc hỗ trợ nhiều camera.
+
+## Cải Tiến Tiềm Năng
+- **Nhận diện khuôn mặt**:
+  - Tích hợp phương pháp voting (`identify_image_voting`) vào nhận diện camera để tăng độ chính xác.
+  - Thử nghiệm các ngưỡng khác nhau hoặc tự động điều chỉnh ngưỡng dựa trên dữ liệu.
+- **Giao diện**:
+  - Thêm chức năng lưu kết quả nhận diện (ảnh hoặc video).
+  - Hiển thị top-k kết quả thay vì chỉ một kết quả để cung cấp thêm thông tin.
+- **Hiệu suất**:
+  - Tối ưu hóa xử lý frame camera để giảm độ trễ.
+  - Sử dụng mô hình nhẹ hơn (như MobileNet) để tăng tốc độ trên thiết bị yếu.
+- **Bảo mật**:
+  - Thêm xác thực người dùng hoặc mã hóa thư viện nhúng để bảo vệ dữ liệu.
+
+## Kết Luận
+Hai đoạn mã cung cấp một hệ thống nhận diện khuôn mặt hoàn chỉnh, kết hợp mạng Triplet dựa trên ResNet18 để tạo nhúng và giao diện Tkinter để tương tác người dùng. Hệ thống hỗ trợ cả nhận diện ảnh tĩnh và thời gian thực qua camera, với khả năng hiển thị trực quan và đánh giá độ chính xác. Đây là một nền tảng mạnh mẽ cho các ứng dụng nhận diện khuôn mặt, với tiềm năng cải tiến để tăng độ chính xác và trải nghiệm người dùng.
