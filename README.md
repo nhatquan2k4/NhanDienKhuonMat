@@ -4,7 +4,7 @@
 
 Nhận diện khuôn mặt là một lĩnh vực quan trọng trong thị giác máy tính, đóng vai trò thiết yếu trong các ứng dụng như bảo mật, xác minh danh tính, giám sát, và cá nhân hóa trải nghiệm người dùng. Dự án này triển khai một hệ thống nhận diện khuôn mặt tiên tiến, tận dụng hàm mất mát Triplet kết hợp với kiến trúc ResNet18 tùy chỉnh để tạo ra các embedding khuôn mặt chất lượng cao. Hệ thống không chỉ phát hiện khuôn mặt từ các ảnh trong cấu trúc thư mục lồng nhau mà còn huấn luyện một mô hình học sâu để đảm bảo rằng các embedding của cùng một người gần nhau hơn trong không gian đặc trưng so với các embedding của người khác.
 
-Dự án sử dụng tập dữ liệu từ thư mục `/kaggle/working/combined_dataset`, áp dụng kỹ thuật phát hiện khuôn mặt bằng Haar Cascade, lưu các khuôn mặt đã cắt vào `/kaggle/working/Faces_detected`, và huấn luyện mô hình để tạo ra các embedding 128 chiều nhằm hỗ trợ xác minh danh tính. Sự kết hợp giữa các phương pháp truyền thống và học sâu hiện đại giúp hệ thống đạt hiệu suất cao, đồng thời mở ra tiềm năng ứng dụng trong các kịch bản thực tế.
+Dự án sử dụng tập dữ liệu bao gồm hơn 200.000 ảnh, áp dụng kỹ thuật phát hiện khuôn mặt bằng Haar Cascade và huấn luyện mô hình để tạo ra các embedding 128 chiều nhằm hỗ trợ xác minh danh tính. Sự kết hợp giữa các phương pháp truyền thống và học sâu hiện đại giúp hệ thống đạt hiệu suất cao, đồng thời mở ra tiềm năng ứng dụng trong các kịch bản thực tế.
 
 ## Mô Tả Vấn Đề
 
@@ -25,7 +25,7 @@ Hệ thống sử dụng bộ phân loại Haar Cascade của OpenCV (`haarcasca
   - `scaleFactor=1.1`: Điều chỉnh tỷ lệ thu nhỏ để phát hiện khuôn mặt ở các kích thước khác nhau.
   - `minNeighbors=5`: Yêu cầu số lượng láng giềng tối thiểu để xác nhận một vùng là khuôn mặt, giảm thiểu phát hiện sai.
   - `minSize=(30, 30)`: Đặt kích thước tối thiểu của khuôn mặt để lọc bỏ các vùng quá nhỏ.
-- **Lưu kết quả**: Các khuôn mặt được cắt và lưu vào thư mục đầu ra `/kaggle/working/Faces_detected` với cấu trúc thư mục tương ứng với thư mục gốc.
+- **Lưu kết quả**: Các khuôn mặt được cắt và lưu vào thư mục đầu ra `Faces_detected` với cấu trúc thư mục tương ứng với thư mục gốc.
 
 Hàm `detect_faces_in_nested_folders` được thiết kế để xử lý cấu trúc thư mục lồng nhau, đảm bảo khả năng xử lý lỗi (ví dụ: ảnh không đọc được) và trả về một từ điển ghi lại số lượng khuôn mặt phát hiện trong mỗi ảnh.
 
@@ -45,7 +45,7 @@ Dữ liệu được tổ chức và chuẩn bị thông qua lớp `TripletFaceD
     - Chuyển thành tensor mà không áp dụng tăng cường dữ liệu để đảm bảo tính nhất quán trong đánh giá.
 
 **Ví dụ về cấu trúc thư mục lồng nhau**:
-Tập dữ liệu huấn luyện (`/kaggle/working/combined_dataset`) được tổ chức theo cấu trúc lồng nhau, trong đó mỗi thư mục con đại diện cho một cá nhân, và các tệp ảnh được lưu bên trong. Ví dụ:
+Tập dữ liệu huấn luyện (`Combined_dataset`) được tổ chức theo cấu trúc lồng nhau, trong đó mỗi thư mục con đại diện cho một cá nhân, và các tệp ảnh được lưu bên trong. Ví dụ:
 ```
 /kaggle/working/combined_dataset/
 ├── person_001/
@@ -60,7 +60,7 @@ Tập dữ liệu huấn luyện (`/kaggle/working/combined_dataset`) được t
     ├── image_001.jpg
     └── image_002.jpg
 ```
-Trong cấu trúc này, thư mục `person_001` chứa các ảnh của một cá nhân (ví dụ: `image_001.jpg`, `image_002.jpg`), và tương tự cho các thư mục `person_002`, `person_003`. Sau khi phát hiện khuôn mặt, thư mục đầu ra `/kaggle/working/Faces_detected` sẽ có cấu trúc tương tự, nhưng chứa các ảnh khuôn mặt đã cắt, ví dụ:
+Trong cấu trúc này, thư mục `person_001` chứa các ảnh của một cá nhân (ví dụ: `image_001.jpg`, `image_002.jpg`), và tương tự cho các thư mục `person_002`, `person_003`. Sau khi phát hiện khuôn mặt, thư mục đầu ra `Faces_detected` sẽ có cấu trúc tương tự, nhưng chứa các ảnh khuôn mặt đã cắt, ví dụ:
 ```
 /kaggle/working/Faces_detected/
 ├── person_001/
@@ -75,7 +75,7 @@ Trong cấu trúc này, thư mục `person_001` chứa các ảnh của một c�
 ```
 Lớp `TripletFaceDataset` sử dụng cấu trúc này để chọn ngẫu nhiên các ảnh từ cùng một thư mục cho cặp anchor-positive và từ một thư mục khác cho negative, đảm bảo tính đa dạng trong các bộ ba.
 
-Tập dữ liệu huấn luyện được lấy từ `/kaggle/working/Faces_detected`, trong khi tập kiểm tra sử dụng dữ liệu từ `/kaggle/input/vggface2/val`. Lớp `TripletFaceDataset` tạo ra 10,000 bộ ba, đảm bảo tính ngẫu nhiên và đa dạng trong quá trình huấn luyện.
+Tập dữ liệu huấn luyện được lấy từ `Faces_detected`, trong khi tập kiểm tra sử dụng dữ liệu từ `input/vggface2/val`. Lớp `TripletFaceDataset` tạo ra 10,000 bộ ba, đảm bảo tính ngẫu nhiên và đa dạng trong quá trình huấn luyện.
 
 ### 3. Kiến Trúc ResNet18
 ResNet18 là một mạng nơ-ron tích chập (CNN) thuộc họ ResNet (Residual Network), được giới thiệu bởi He và cộng sự trong bài báo "Deep Residual Learning for Image Recognition" (2015). Mô hình này được chọn cho dự án nhờ vào hiệu suất cao, độ phức tạp tính toán vừa phải, và khả năng học các đặc trưng phức tạp thông qua cơ chế kết nối tắt (skip connections).
@@ -129,7 +129,7 @@ Các chỉ số đánh giá bao gồm:
 - **Mất mát**: Trung bình của hàm mất mát Triplet trên mỗi lô, phản ánh mức độ lỗi trong việc sắp xếp các embedding.
 - **Độ chính xác**: Tỷ lệ các bộ ba mà khoảng cách anchor-positive nhỏ hơn khoảng cách anchor-negative, được tính bằng hàm `compute_accuracy`.
 
-Sau mỗi epoch, mô hình được đánh giá trên tập kiểm tra để theo dõi khả năng tổng quát hóa. Mô hình cuối cùng được lưu tại `/kaggle/working/final_triplet_resnet18_ss2.pth` sau khi hoàn thành huấn luyện.
+Sau mỗi epoch, mô hình được đánh giá trên tập kiểm tra để theo dõi khả năng tổng quát hóa. Mô hình cuối cùng được lưu tại `final_triplet_resnet18_ss2.pth` sau khi hoàn thành huấn luyện.
 
 ## Chi Tiết Triển Khai
 
@@ -164,8 +164,8 @@ Bảng dưới đây tóm tắt các chỉ số tại một số mốc quan tr�
 ## Thảo Luận
 
 Hệ thống thể hiện hiệu quả vượt trội trong việc học các đặc trưng trên tập huấn luyện, đạt độ chính xác gần 95% và mất mát huấn luyện rất thấp (0.2537). Tuy nhiên, độ chính xác kiểm tra dao động quanh mức 75-80%, cho thấy một số hạn chế trong khả năng tổng quát hóa. Các nguyên nhân tiềm tàng bao gồm:
-- **Độ đa dạng dữ liệu**: Tập dữ liệu huấn luyện (`/kaggle/working/Faces_detected`) có thể thiếu sự đa dạng về góc nhìn, ánh sáng, biểu cảm, hoặc bối cảnh, dẫn đến hiệu suất kiểm tra không ổn định.
-- **Chênh lệch dữ liệu**: Sự khác biệt trong chất lượng ảnh, tiền xử lý, hoặc phân bố dữ liệu giữa tập huấn luyện và kiểm tra (`/kaggle/input/vggface2/val`) có thể ảnh hưởng đến hiệu suất.
+- **Độ đa dạng dữ liệu**: Tập dữ liệu huấn luyện (`Faces_detected`) có thể thiếu sự đa dạng về góc nhìn, ánh sáng, biểu cảm, hoặc bối cảnh, dẫn đến hiệu suất kiểm tra không ổn định.
+- **Chênh lệch dữ liệu**: Sự khác biệt trong chất lượng ảnh, tiền xử lý, hoặc phân bố dữ liệu giữa tập huấn luyện và kiểm tra (`input/vggface2/val`) có thể ảnh hưởng đến hiệu suất.
 - **Siêu tham số**: Biên độ 1.0 trong hàm mất mát Triplet và tốc độ học $10^{-4}$ có thể chưa được tối ưu hóa hoàn toàn cho tập dữ liệu này.
 - **Cấu trúc thư mục**: Mặc dù cấu trúc lồng nhau giúp tổ chức dữ liệu hiệu quả, nhưng nếu số lượng ảnh trong mỗi thư mục (cá nhân) không đồng đều, điều này có thể gây ra thiên vị trong việc chọn bộ ba.
 
@@ -180,7 +180,7 @@ Hệ thống thể hiện hiệu quả vượt trội trong việc học các đ
 
 Dự án đã xây dựng thành công một hệ thống nhận diện khuôn mặt toàn diện, từ phát hiện khuôn mặt bằng Haar Cascade, tổ chức dữ liệu trong cấu trúc thư mục lồng nhau, đến huấn luyện mô hình học sâu sử dụng hàm mất mát Triplet. Việc sử dụng ResNet18 tùy chỉnh, với trọng số được huấn luyện trước từ ImageNet, đã mang lại hiệu quả vượt trội, đạt độ chính xác huấn luyện 94.74% và mất mát huấn luyện 0.2537 sau 100 epoch. Mặc dù độ chính xác kiểm tra dao động quanh 75-80%, hệ thống vẫn thể hiện tiềm năng lớn trong các ứng dụng thực tế như xác minh danh tính, kiểm soát truy cập, hoặc nhận diện tự động.
 
-Mô hình cuối cùng, được lưu tại `/kaggle/working/final_triplet_resnet18_ss2.pth`, sẵn sàng cho các tác vụ xác minh khuôn mặt và có thể được cải tiến thêm thông qua các kỹ thuật tối ưu hóa đề xuất. Với sự kết hợp giữa kỹ thuật truyền thống (Haar Cascade) và học sâu hiện đại (ResNet18, Triplet Loss), dự án không chỉ đạt được hiệu quả kỹ thuật mà còn mở ra các hướng phát triển cho các hệ thống nhận diện khuôn mặt tiên tiến hơn trong tương lai.
+Mô hình cuối cùng, được lưu tại `final_triplet_resnet18_ss2.pth`, sẵn sàng cho các tác vụ xác minh khuôn mặt và có thể được cải tiến thêm thông qua các kỹ thuật tối ưu hóa đề xuất. Với sự kết hợp giữa kỹ thuật truyền thống (Haar Cascade) và học sâu hiện đại (ResNet18, Triplet Loss), dự án không chỉ đạt được hiệu quả kỹ thuật mà còn mở ra các hướng phát triển cho các hệ thống nhận diện khuôn mặt tiên tiến hơn trong tương lai.
 
 ## II. Nhận diện
 1. **Xây dựng thư viện nhúng và nhận diện khuôn mặt**: Sử dụng mạng Triplet dựa trên ResNet18 để tạo nhúng (embeddings) cho các ảnh trong thư viện và thực hiện nhận diện khuôn mặt từ ảnh đầu vào hoặc frame camera.
