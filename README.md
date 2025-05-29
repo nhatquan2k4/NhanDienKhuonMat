@@ -1,4 +1,4 @@
-# Báo Cáo Chi Tiết: Nhận Diện Khuôn Mặt Sử Dụng Hàm Mất Mát Triplet Với Mô Hình ResNet18
+# Báo Cáo: Nhận Diện Khuôn Mặt Sử Dụng Hàm Mất Mát Triplet Với Mô Hình ResNet18
 
 ## Giới Thiệu
 
@@ -271,6 +271,14 @@ Cung cấp một giao diện sử dụng Tkinter để người dùng tương t�
   - Sử dụng mô hình nhẹ hơn (như MobileNet) để tăng tốc độ trên thiết bị yếu.
 - **Bảo mật**:
   - Thêm xác thực người dùng hoặc mã hóa thư viện nhúng để bảo vệ dữ liệu.
+
+## 3. Kết quả thực nghiệm 
+Hệ thống đã được triển khai và kiểm thử trên máy tính cá nhân với các tình huống thực tế khác nhau. Kết quả thực nghiệm cho thấy:
+-	Phát hiện khuôn mặt: Khá tốt
+-	Nhận diện khuôn mặt bằng ảnh và camera: Hệ thống nhận diện khá tốt trong trường hợp ảnh rõ nét và điều kiện ánh sáng phù hợp. Tiến hành test 90 ảnh đúng 67 ảnh, tỉ lệ chính xác đạt khoảng 70%
+-	Hiệu suất thời gian thực: Hệ thống xử lý và hiển thị kết quả gần như thời gian thực (real-time), đảm bảo trải nghiệm mượt mà khi sử dụng webcam.
+Kết luận:
+Hệ thống đã đáp ứng tốt các yêu cầu cơ bản về nhận diện khuôn mặt, tuy nhiên hiệu quả có thể bị ảnh hướng với các góc độ khác nhau hoặc điều kiện môi trường. Đây sẽ là những thứ cần cải thiện trong tương lai.
 
 ## Kết Luận
 Hai đoạn mã cung cấp một hệ thống nhận diện khuôn mặt hoàn chỉnh, kết hợp mạng Triplet dựa trên ResNet18 để tạo nhúng và giao diện Tkinter để tương tác người dùng. Hệ thống hỗ trợ cả nhận diện ảnh tĩnh và thời gian thực qua camera, với khả năng hiển thị trực quan và đánh giá độ chính xác. Đây là một nền tảng mạnh mẽ cho các ứng dụng nhận diện khuôn mặt, với tiềm năng cải tiến để tăng độ chính xác và trải nghiệm người dùng.
